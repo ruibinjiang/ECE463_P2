@@ -7,7 +7,6 @@ struct route_entry routingTable[MAX_ROUTERS];
 int NumRoutes;
 
 
-////////////////////////////////////////////////////////////////
 void InitRoutingTbl (struct pkt_INIT_RESPONSE *InitResponse, int myID){
 	/* ----- YOUR CODE HERE ----- */
 
@@ -28,14 +27,12 @@ void InitRoutingTbl (struct pkt_INIT_RESPONSE *InitResponse, int myID){
 }
 
 
-////////////////////////////////////////////////////////////////
 int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myID){
 	/* ----- YOUR CODE HERE ----- */
 	return 0;
 }
 
 
-////////////////////////////////////////////////////////////////
 void ConvertTabletoPkt(struct pkt_RT_UPDATE *UpdatePacketToSend, int myID){
 	/* ----- YOUR CODE HERE ----- */
 
@@ -50,8 +47,6 @@ void ConvertTabletoPkt(struct pkt_RT_UPDATE *UpdatePacketToSend, int myID){
 }
 
 
-////////////////////////////////////////////////////////////////
-//It is highly recommended that you do not change this function!
 void PrintRoutes (FILE* Logfile, int myID){
 	/* ----- PRINT ALL ROUTES TO LOG FILE ----- */
 	int i;
@@ -68,6 +63,7 @@ void PrintRoutes (FILE* Logfile, int myID){
 	fprintf(Logfile, "\n");
 	fflush(Logfile);
 }
+
 
 void UninstallRoutesOnNbrDeath(int DeadNbr){
 	int i;
