@@ -10,7 +10,21 @@ int NumRoutes;
 ////////////////////////////////////////////////////////////////
 void InitRoutingTbl (struct pkt_INIT_RESPONSE *InitResponse, int myID){
 	/* ----- YOUR CODE HERE ----- */
-	return;
+
+	//init other paths
+	int i;
+	for (i = 0; i < InitResponse->no_nbr; i++)
+    {
+	    routingTable[i].cost = InitResponse->nbrcost[i].cost;
+	    routingTable[i].next_hop = InitResponse->nbrcost[i].nbr;
+	    routingTable[i].dest_id = InitResponse->nbrcost[i].nbr;
+    }
+
+	//init path to self
+	routingTable[i].cost = 0;
+	routingTable[i].next_hop = myID;
+	routingTable[i].dest_id = myID;
+	NumRoutes = i + 1;
 }
 
 
