@@ -71,7 +71,7 @@ void PrintRoutes (FILE* Logfile, int myID){
 
 void UninstallRoutesOnNbrDeath(int DeadNbr){
 	int i;
-	for (i = 0; i < MAX_ROUTERS; i++)
+	for (i = 0; i < NumRoutes; i++)
 	{
 		if (routingTable[i].next_hop == DeadNbr)
 		{
