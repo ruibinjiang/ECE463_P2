@@ -65,5 +65,13 @@ void PrintRoutes (FILE* Logfile, int myID){
 ////////////////////////////////////////////////////////////////
 void UninstallRoutesOnNbrDeath(int DeadNbr){
 	/* ----- YOUR CODE HERE ----- */
+	int i;
+	for (i = 0; i < MAX_ROUTERS; i++)
+	{
+		if (routingTable[i].next_hop == DeadNbr)
+		{
+			routingTable[i].cost = INFINITY;
+		}
+	}
 	return;
 }
