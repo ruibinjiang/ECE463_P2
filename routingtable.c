@@ -38,7 +38,15 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 ////////////////////////////////////////////////////////////////
 void ConvertTabletoPkt(struct pkt_RT_UPDATE *UpdatePacketToSend, int myID){
 	/* ----- YOUR CODE HERE ----- */
-	return;
+
+	UpdatePacketToSend->sender_id = myID;
+	UpdatePacketToSend->no_routes = NumRoutes;
+
+	int i;
+	for (i = 0; i < NumRoutes; i++)
+    {
+	    UpdatePacketToSend->route[i] = routingTable[i];
+    }
 }
 
 
