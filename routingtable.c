@@ -8,8 +8,6 @@ int NumRoutes;
 
 
 void InitRoutingTbl (struct pkt_INIT_RESPONSE *InitResponse, int myID){
-	/* ----- YOUR CODE HERE ----- */
-
 	//init other paths
 	int i;
 	for (i = 0; i < InitResponse->no_nbr; i++)
@@ -36,14 +34,16 @@ void InitRoutingTbl (struct pkt_INIT_RESPONSE *InitResponse, int myID){
 
 
 int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myID){
-	/* ----- YOUR CODE HERE ----- */
-	return 0;
+	int updated = 0;
+	//d = c(x,z)+d(z,y) cost of path
+	//if next_hop(x,y)=z|(d<d(x,y) &x=nexthop(z,y)) force updated
+	//else ....
+	
+	return updated;
 }
 
 
 void ConvertTabletoPkt(struct pkt_RT_UPDATE *UpdatePacketToSend, int myID){
-	/* ----- YOUR CODE HERE ----- */
-
 	UpdatePacketToSend->sender_id = myID;
 	UpdatePacketToSend->no_routes = NumRoutes;
 
