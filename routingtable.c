@@ -14,14 +14,14 @@ void InitRoutingTbl (struct pkt_INIT_RESPONSE *InitResponse, int myID){
 	int i;
 	for (i = 0; i < InitResponse->no_nbr; i++)
     {
-	    struct route_entry cur = routingTable[(InitResponse->nbrcost[i].nbr)];
+	    struct route_entry * cur = &(routingTable[(InitResponse->nbrcost[i].nbr)]);
 
-	    cur.cost = InitResponse->nbrcost[i].cost;
-	    cur.dest_id = InitResponse->nbrcost[i].nbr;
-	    cur.next_hop = InitResponse->nbrcost[i].nbr;
-	    cur.path[0] = myID;
-	    cur.path[1] = InitResponse->nbrcost->nbr;
-	    cur.path_len = 2;
+	    cur->cost = InitResponse->nbrcost[i].cost;
+	    cur->dest_id = InitResponse->nbrcost[i].nbr;
+	    cur->next_hop = InitResponse->nbrcost[i].nbr;
+	    cur->path[0] = myID;
+	    cur->path[1] = InitResponse->nbrcost->nbr;
+	    cur->path_len = 2;
     }
 
 	//init path to self
