@@ -34,7 +34,8 @@ void InitRoutingTbl (struct pkt_INIT_RESPONSE *InitResponse, int myID){
 
 
 int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myID){
-	int isUpdated = 0;
+	int isUpdated = 0;  //update flag
+
 	//d = c(x,z)+d(z,y) cost of path
 	//if next_hop(x,y)=z|(d<d(x,y) &x=nexthop(z,y)) force updated
 	//else ....
@@ -42,10 +43,10 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 	for (i = 0; i < RecvdUpdatePacket->no_routes; i++)
 	{
 		//total cost INF check
-        int total = (int) RecvdUpdatePacket->route[i].cost + costToNbr;
-        if (total >= INFINITY)
+        int cost = (int) RecvdUpdatePacket->route[i].cost + costToNbr;
+        if (cost >= INFINITY)
         {
-            total = INFINITY;
+            cost = INFINITY;
         }
 
 	}
