@@ -52,10 +52,10 @@ struct route_entry {
   unsigned int dest_id; /* destination router id */
   unsigned int next_hop; /* next hop on the shortest path to dest_id */
   unsigned int cost; /* cost to desintation router */
-#ifdef PATHVECTOR
+//#ifdef PATHVECTOR
   unsigned int path_len; /* length of loop-free path to dest_id, eg: with path R1 -> R2 -> R3, the length is 3; self loop R0 -> R0 is length 1 */
   unsigned int path[MAX_PATH_LEN]; /* array containing id's of routers along the path, this includes the source node, all intermediate nodes, and the destination node; self loop R0 -> R0 should only contain one instance of R0 in path */
-#endif
+//#endif
 };
 
 struct pkt_RT_UPDATE {
