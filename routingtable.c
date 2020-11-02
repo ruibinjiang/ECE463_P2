@@ -38,7 +38,12 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 	//d = c(x,z)+d(z,y) cost of path
 	//if next_hop(x,y)=z|(d<d(x,y) &x=nexthop(z,y)) force updated
 	//else ....
-	
+	int i;
+	for (i = 0; i < InitResponse->no_nbr; i++){
+		//total cost INF check
+
+		
+	}
 	return updated;
 }
 
