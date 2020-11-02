@@ -51,7 +51,7 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
             cost = INFINITY;
         }
 
-        //check for forced update
+        //check for update conditions among all routers
         int j;
         for (j = 0; j < NumRoutes; j++)
         {
