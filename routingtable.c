@@ -55,7 +55,15 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
         int j;
         for (j = 0; j < NumRoutes; j++)
         {
+            //check for split horizon
 
+            //check for forced update
+
+            //if either split horizon or forced update, change the tables accordingly
+            if (isUpdated)
+            {
+
+            }
         }
 
 	}
