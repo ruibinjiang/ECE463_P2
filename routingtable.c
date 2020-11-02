@@ -39,9 +39,10 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 	//if next_hop(x,y)=z|(d<d(x,y) &x=nexthop(z,y)) force updated
 	//else ....
 	int i;
-	for (i = 0; i < RecvdUpdatePacket->no_routes; i++){
+	for (i = 0; i < RecvdUpdatePacket->no_routes; i++)
+	{
 		//total cost INF check
-        int total = (int) RecvdUpdatePacket->route[i].cost;
+        int total = (int) RecvdUpdatePacket->route[i].cost + costToNbr;
         if (total >= INFINITY)
         {
             total = INFINITY;
