@@ -42,10 +42,10 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 	int i;
 	for (i = 0; i < RecvdUpdatePacket->no_routes; i++)
 	{
+        int cost = (int) RecvdUpdatePacket->route[i].cost + costToNbr;
 	    int destID = (int) RecvdUpdatePacket->route[i].dest_id;
 
 		//total cost INF check
-        int cost = (int) RecvdUpdatePacket->route[i].cost + costToNbr;
         if (cost >= INFINITY)
         {
             cost = INFINITY;
