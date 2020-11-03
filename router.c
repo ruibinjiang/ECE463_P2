@@ -69,7 +69,7 @@ int main (int argc, char ** argv)
         return EXIT_FAILURE;
     }
 
-    memset(serveraddr, 0, sizeof(serveraddr));
+    memset(&serveraddr, 0, sizeof(serveraddr));
     serveraddr.sin_port = htons(nePort);
     serveraddr.sin_family = AF_INET;
 
