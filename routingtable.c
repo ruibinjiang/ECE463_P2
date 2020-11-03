@@ -63,7 +63,7 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 			}
 			routingTable[destID].path_len = currRoute->path_len + 1;
 			routingTable[destID].path[0]=myID;
-			memcpy(path[1],currRoute->path,(currRoute->path_len)*sizeof(int));
+			memcpy(routingTable[destID].path[1],currRoute->path,(currRoute->path_len)*sizeof(int));
 		}
 		//forced update
 		else if (routingTable[destID].next_hop == RecvdUpdatePacket->sender_id){
@@ -78,10 +78,10 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 			}
 			routingTable[destID].path_len = currRoute->path_len + 1;
 			routingTable[destID].path[0]=myID;
-			memcpy(path[1],currRoute->path,(currRoute->path_len)*sizeof(int));
+			memcpy(routingTable[destID].path[1],currRoute->path,(currRoute->path_len)*sizeof(int));
 		}
 		else{//split horizon
-			if((currRoute.cost + costToNbr) < routingTable[destID].cost){
+			if((currRoute->cost + costToNbr) < routingTable[destID].cost){
 				for (j = 0; j < currRoute->path_len; j++){
 					if (currRoute->path[j] == myID)
 						splitHorizon = 1;
@@ -100,7 +100,7 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 					}
 					routingTable[destID].path_len = currRoute->path_len + 1;
 					routingTable[destID].path[0]=myID;
-					memcpy(path[1],currRoute->path,(currRoute->path_len)*sizeof(int));
+					memcpy(routingTable[destID].path[1],currRoute->path,(currRoute->path_len)*sizeof(int));
 				}
 			}
 		}
