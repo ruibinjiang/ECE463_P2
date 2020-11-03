@@ -9,6 +9,7 @@ int NumRoutes;
 
 void InitRoutingTbl (struct pkt_INIT_RESPONSE *InitResponse, int myID){
 	//init other paths
+
 	int i;
 	for (i = 0; i < InitResponse->no_nbr; i++)
     {
@@ -132,6 +133,8 @@ void ConvertTabletoPkt(struct pkt_RT_UPDATE *UpdatePacketToSend, int myID){
             {
 	            cur->path[j] = routingTable[i].path[j];
             }
+
+	        x++;
         }
     }
 }
