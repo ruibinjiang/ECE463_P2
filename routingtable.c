@@ -75,6 +75,7 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 				for (j = 0; j < currRoute->path_len; j++){
 					if (currRoute->path[j] == myID)
 						splitHorizon = 1;
+						break;
 				}
 				if(splitHorizon){
 					isUpdated=1;
