@@ -57,8 +57,7 @@ int main (int argc, char ** argv)
     int nePort = atoi(argv[3]);
     int routerPort = atoi(argv[4]);
 
-    ne_fd = open_udpfd(nePort);
-    if (ne_fd == -1)
+    if ((ne_fd = open_udpfd(nePort)) == -1)
     {
         fprintf(stderr, "ERROR: could not open network emulator UDP\n");
         return EXIT_FAILURE;
@@ -69,8 +68,5 @@ int main (int argc, char ** argv)
         return EXIT_FAILURE;
     }
     memset(&serveraddr, 0, sizeof(serveraddr));
-
-
-
 
 }
