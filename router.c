@@ -9,6 +9,7 @@
 
 /* GLOBAL VARIABLES */
 int ne_fd;
+struct sockaddr_in serveraddr;
 
 //from the last project :)
 int open_udpfd(int port)
@@ -67,5 +68,10 @@ int main (int argc, char ** argv)
         fprintf(stderr, "ERROR: hostname not found");
         return EXIT_FAILURE;
     }
+
+    memset(serveraddr, 0, sizeof(serveraddr));
+    serveraddr.sin_port = htons(nePort);
+    serveraddr.sin_family = AF_INET;
+
 
 }
