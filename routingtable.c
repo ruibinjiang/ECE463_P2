@@ -137,7 +137,7 @@ void ConvertTabletoPkt(struct pkt_RT_UPDATE *UpdatePacketToSend, int myID){
 
 
 
-	        //x++;
+	        x++;
         }
     }
 }
