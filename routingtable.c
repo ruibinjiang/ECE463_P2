@@ -36,6 +36,8 @@ void InitRoutingTbl (struct pkt_INIT_RESPONSE *InitResponse, int myID){
 int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myID){
 	int isUpdated = 0;  //update flag
 	struct route_entry * currRoute;
+	int destID, j;
+	int splitHorizon = 0;
 
 	//d = c(x,z)+d(z,y) cost of path
 	//if next_hop(x,y)=z|(d<d(x,y) &x=nexthop(z,y)) force updated
@@ -44,34 +46,42 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 	for (i = 0; i < RecvdUpdatePacket->no_routes; i++)
 	{	
 		currRoute = &(RecvdUpdatePacket->route[i]);
-        //int cost = (int) currRoute.cost + costToNbr;
-	    int destID = (int) currRoute.dest_id;
+		destID = (int) currRoute->dest_id;
+        //newCost = (int) currRoute.cost + costToNbr;
+	    
 
 		//total cost INF check
-       /* if (cost >= INFINITY)
+       /* if (newCost >= INFINITY)
         {
-            cost = INFINITY;
+            newCost = INFINITY;
         }*/
 
         //check for update conditions among all routers
 
         //check for existence
         if (routingTable[destID].dest_id != destID){
-
+			isUpdated=1;
+			NumRoutes++;
+			//add route to dest
 		}
-		else if (){//forced update
-
+		//forced update
+		else if (routingTable[destID].next_hop == RecvdUpdatePacket->sender_id){
+			//change route, cost
+			//????if not changing anything
+			isUpdated=1;
 		}
-		else if (){//split horizon
+		else{//split horizon
+			if((currRoute.cost + costToNbr) < routingTable[destID].cost){
+				for (j = 0; j < currRoute->path_len; j++){
+					if (currRoute->path[j] == myID)
+						splitHorizon = 1;
+				}
+				if(splitHorizon){
+					isUpdated=1;
+					//change everything
 
-		}
-
-        
-
-		//if either split horizon or forced update, change the tables accordingly
-		if (isUpdated)
-		{
-
+				}
+			}
 		}
 	}
 
