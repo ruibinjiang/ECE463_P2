@@ -7,6 +7,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+/* GLOBAL VARIABLES */
+int ne_fd;
+
 //from the notes :)
 int open_udpfd(int port)
 {
@@ -42,10 +45,8 @@ int main (int argc, char ** argv)
     //parse inputs
     if (argc != 5)
     {
-        printf("ERROR: incorrect arguments\n";
+        fprintf(stderr, "ERROR: incorrect arguments\n";
         printf("format: <router ID> <ne hostname> <ne UDP port> <router UDP port>\n");
-
-        fprintf(stderr, "incorrect args\n");
         return EXIT_FAILURE;
     }
 
@@ -53,5 +54,12 @@ int main (int argc, char ** argv)
     char * host = argv[2];
     int nePort = atoi(argv[3]);
     int routerPort = atoi(argv[4]);
+
+    ne_fd = open_udpfd(nePort);
+    if (ne_fd == -1)
+    {
+        fprintf(stderr, "ERROR: could not open network emulator UDP\n");
+        return EXIT_FAILURE;
+    }
 
 }
