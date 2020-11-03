@@ -121,9 +121,10 @@ void ConvertTabletoPkt(struct pkt_RT_UPDATE *UpdatePacketToSend, int myID){
     {
 	    if (routingTable[i].path_len != 0)
         {
-	        UpdatePacketToSend->route[i] = routingTable[i];
+	        //UpdatePacketToSend->route[x] = routingTable[i];
+		struct route_entry * cur = &(UpdatePacketToSend->route[x]);
 
-	        /*
+	        
 	        cur->path_len= routingTable[i].path_len;
 	        cur->dest_id = routingTable[i].dest_id;
 	        cur->cost = routingTable[i].cost;
@@ -133,7 +134,7 @@ void ConvertTabletoPkt(struct pkt_RT_UPDATE *UpdatePacketToSend, int myID){
 	        for (j = 0; j < MAX_PATH_LEN; j++)
             {
 	            cur->path[j] = routingTable[i].path[j];
-            }*/
+            }
 
 
 
