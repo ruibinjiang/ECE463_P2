@@ -67,6 +67,5 @@ int main (int argc, char ** argv)
         fprintf(stderr, "ERROR: hostname not found\n");
         return EXIT_FAILURE;
     }
-    serveraddr.sin_addr = hp->h_addr_list[0];
-
+    strcpy((char *) &(serveraddr.sin_addr), hp->h_addr_list[0]);
 }
