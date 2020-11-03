@@ -64,9 +64,9 @@ int main (int argc, char ** argv)
     }
     if ((hp = gethostbyname(host)) == NULL)
     {
-        fprintf(stderr, "ERROR: hostname not found");
+        fprintf(stderr, "ERROR: hostname not found\n");
         return EXIT_FAILURE;
     }
-    memset(&serveraddr, 0, sizeof(serveraddr));
+    serveraddr.sin_addr = hp->h_addr_list[0];
 
 }
