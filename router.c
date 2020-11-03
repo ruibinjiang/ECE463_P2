@@ -10,7 +10,7 @@
 /* GLOBAL VARIABLES */
 int ne_fd;
 
-//from the notes :)
+//from the last project :)
 int open_udpfd(int port)
 {
     int listenfd, optval=1;
@@ -40,7 +40,8 @@ int open_udpfd(int port)
 
 int main (int argc, char ** argv)
 {
-    /* THREAD VARIABLES */
+    /* MAIN VARIABLES */
+    struct hostent * hp;
 
     //parse inputs
     if (argc != 5)
@@ -59,6 +60,11 @@ int main (int argc, char ** argv)
     if (ne_fd == -1)
     {
         fprintf(stderr, "ERROR: could not open network emulator UDP\n");
+        return EXIT_FAILURE;
+    }
+    if ((hp = gethostbyname(host)) == NULL)
+    {
+        fprintf(stderr, "ERROR: hostname not found");
         return EXIT_FAILURE;
     }
 
