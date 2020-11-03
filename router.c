@@ -43,6 +43,8 @@ int main (int argc, char ** argv)
 {
     /* MAIN VARIABLES */
     struct hostent * hp;
+    struct pkt_INIT_REQUEST initRequest;
+    struct pkt_INIT_RESPONSE initResponse;
 
     //parse inputs
     if (argc != 5)
@@ -68,4 +70,14 @@ int main (int argc, char ** argv)
         return EXIT_FAILURE;
     }
     strcpy((char *) &(serveraddr.sin_addr), hp->h_addr_list[0]);
+
+    //prep request
+    initRequest.router_id = htonl(routerID);
+    //send request
+    sendto(ne_fd, &initRequest, sizeof(initRequest), 0, (struct sockaddr *) &serveraddr, sizeof(serveraddr));
+    //rec response
+    recvfrom(ne_fd,&initResponse, sizeof(initResponse), 0, NULL, NULL);
+
+    ntoh_pkt_INIT_RESPONSE(&initResponse);
+	InitRoutingTbl(&initResponse, router_id);
 }
