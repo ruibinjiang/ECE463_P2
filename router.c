@@ -15,7 +15,7 @@ struct sockaddr_in serveraddr;
 int open_udpfd(int port)
 {
     int listenfd, optval=1;
-    struct sockaddr_in serveraddr;
+    //struct sockaddr_in serveraddr;
 
     /* Create a socket descriptor */
     if ((listenfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
@@ -68,10 +68,9 @@ int main (int argc, char ** argv)
         fprintf(stderr, "ERROR: hostname not found");
         return EXIT_FAILURE;
     }
-
     memset(&serveraddr, 0, sizeof(serveraddr));
-    serveraddr.sin_port = htons(nePort);
-    serveraddr.sin_family = AF_INET;
+
+
 
 
 }
