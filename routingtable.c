@@ -114,8 +114,8 @@ void ConvertTabletoPkt(struct pkt_RT_UPDATE *UpdatePacketToSend, int myID){
 	UpdatePacketToSend->sender_id = myID;
 	UpdatePacketToSend->no_routes = NumRoutes;
 
+    int x = 0;
 	int i;
-	int x = 0;
 	for (i = 0; i < MAX_ROUTERS; i++)
     {
 	    if (routingTable[i].path_len != 0)
