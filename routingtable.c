@@ -84,11 +84,12 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 		else{//split horizon
 			if((currRoute->cost + costToNbr) < routingTable[destID].cost){
 				for (j = 0; j < currRoute->path_len; j++){
-					if (currRoute->path[j] == myID)
+					if (currRoute->path[j] == myID){
 						splitHorizon = 1;
 						break;
+					}
 				}
-				if(splitHorizon){
+				if(!splitHorizon){
 					isUpdated=1;
 					//update everything
 					routingTable[destID].dest_id = currRoute->dest_id;
