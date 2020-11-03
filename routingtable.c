@@ -43,7 +43,7 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 	int i;
 	for (i = 0; i < RecvdUpdatePacket->no_routes; i++)
 	{	
-		currRoute = &RecvdUpdatePacket->route[i];
+		currRoute = &(RecvdUpdatePacket->route[i]);
         //int cost = (int) currRoute.cost + costToNbr;
 	    int destID = (int) currRoute.dest_id;
 
