@@ -8,9 +8,6 @@
 #include <pthread.h>
 
 /* GLOBAL VARIABLES */
-int ne_fd;
-struct sockaddr_in ne_serveraddr;
-FILE* fptr;
 
 //from the last project :)
 int open_udpfd(int port)
@@ -43,6 +40,9 @@ int open_udpfd(int port)
 int main (int argc, char ** argv)
 {
     /* MAIN VARIABLES */
+    int ne_fd;
+    struct sockaddr_in ne_serveraddr;
+    FILE* fptr;
     struct hostent * hp;
     struct pkt_INIT_REQUEST initRequest;
     struct pkt_INIT_RESPONSE initResponse;
@@ -74,7 +74,8 @@ int main (int argc, char ** argv)
 
     bzero((char *) &ne_serveraddr, sizeof(ne_serveraddr));
     ne_serveraddr.sin_family = AF_INET;
-    strcpy((char *) &(ne_serveraddr.sin_addr), hp->h_addr_list[0]);
+    //strcpy((char *) &(ne_serveraddr.sin_addr), hp->h_addr_list[0]);
+    bcopy(hp->h_addr_list[0],(char*)&ne_serveraddr.sin_addr.s_addr,hp->h_length);
     ne_serveraddr.sin_port = htons(ne_port);
     
     //prep request
