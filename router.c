@@ -2,20 +2,21 @@
 #include "ne.h"
 #include "router.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <pthread.h>
-#include <string.h>
-#include <stdlib.h>
 
 /* GLOBAL VARIABLES */
 int ne_fd;
-struct sockaddr_in serveraddr;
+struct sockaddr_in ne_serveraddr;
+FILE* fptr;
 
 //from the last project :)
 int open_udpfd(int port)
 {
     int listenfd, optval=1;
-    //struct sockaddr_in serveraddr;
+    struct sockaddr_in serveraddr;
 
     /* Create a socket descriptor */
     if ((listenfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
@@ -45,21 +46,22 @@ int main (int argc, char ** argv)
     struct hostent * hp;
     struct pkt_INIT_REQUEST initRequest;
     struct pkt_INIT_RESPONSE initResponse;
+    char log_filename[20];
 
     //parse inputs
     if (argc != 5)
     {
-        fprintf(stderr, "ERROR: incorrect arguments\n";
+        fprintf(stderr, "ERROR: incorrect arguments\n");
         printf("format: <router ID> <ne hostname> <ne UDP port> <router UDP port>\n");
         return EXIT_FAILURE;
     }
 
-    int routerID = atoi(argv[1]);
+    int router_ID = atoi(argv[1]);
     char * host = argv[2];
-    int nePort = atoi(argv[3]);
-    int routerPort = atoi(argv[4]);
+    int ne_port = atoi(argv[3]);
+    int router_port = atoi(argv[4]);
 
-    if ((ne_fd = open_udpfd(nePort)) == -1)
+    if ((ne_fd = open_udpfd(router_port)) == -1)
     {
         fprintf(stderr, "ERROR: could not open network emulator UDP\n");
         return EXIT_FAILURE;
@@ -69,15 +71,27 @@ int main (int argc, char ** argv)
         fprintf(stderr, "ERROR: hostname not found\n");
         return EXIT_FAILURE;
     }
-    strcpy((char *) &(serveraddr.sin_addr), hp->h_addr_list[0]);
 
+    bzero((char *) &ne_serveraddr, sizeof(ne_serveraddr));
+    ne_serveraddr.sin_family = AF_INET;
+    strcpy((char *) &(ne_serveraddr.sin_addr), hp->h_addr_list[0]);
+    ne_serveraddr.sin_port = htons(ne_port);
+    
     //prep request
-    initRequest.router_id = htonl(routerID);
+    initRequest.router_id = htonl(router_ID);
     //send request
-    sendto(ne_fd, &initRequest, sizeof(initRequest), 0, (struct sockaddr *) &serveraddr, sizeof(serveraddr));
+    sendto(ne_fd, &initRequest, sizeof(initRequest), 0, (struct sockaddr *) &ne_serveraddr, sizeof(ne_serveraddr));
     //rec response
-    recvfrom(ne_fd,&initResponse, sizeof(initResponse), 0, NULL, NULL);
+    recvfrom(ne_fd, &initResponse, sizeof(initResponse), 0, NULL, NULL);
 
     ntoh_pkt_INIT_RESPONSE(&initResponse);
-	InitRoutingTbl(&initResponse, router_id);
+	InitRoutingTbl(&initResponse, router_ID);
+
+	sprintf(log_filename, "router%d.log", router_ID);
+	fptr = fopen(log_filename, "w");
+
+	PrintRoutes(fptr, router_ID);
+
+    fclose(fptr);
+    return 0;
 }
