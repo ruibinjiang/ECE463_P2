@@ -8,6 +8,15 @@
 #include <pthread.h>
 
 /* GLOBAL VARIABLES */
+int ne_fd;
+int router_ID;
+pthread_mutex_t lock;
+
+struct pkt_RT_UPDATE RT_request;
+
+
+void * udp_update(void);
+void * timer_update(void);
 
 //from the last project :)
 int open_udpfd(int port)
@@ -36,17 +45,45 @@ int open_udpfd(int port)
     return listenfd;
 }
 
+void * udp_update(void){
+    struct pkt_RT_UPDATE updateRequest;
+    int isUpdated = 0;
+    while (1)
+    {
+        //rec response
+        recvfrom(ne_fd, &updateRequest, sizeof(updateRequest), 0, NULL, NULL);
+        
+        pthread_mutex_lock(&lock);
+        ntoh_pkt_RT_UPDATE(&updateRequest);
+        //for loop to check for update time
+
+        isUpdated = UpdateRoutes(&updateRequest,?????cost,router_ID);
+        if(isUpdated){
+            PrintRoutes(fptr,router_ID);
+            convergence_time = time(NULL);
+            isConverged = ;//??????????????
+        }
+
+        pthread_mutex_unlock(&lock);
+    }
+    
+}
+
+void * timer_update(void){
+
+}
 
 int main (int argc, char ** argv)
 {
     /* MAIN VARIABLES */
-    int ne_fd;
     struct sockaddr_in ne_serveraddr;
     FILE* fptr;
     struct hostent * hp;
     struct pkt_INIT_REQUEST initRequest;
     struct pkt_INIT_RESPONSE initResponse;
     char log_filename[20];
+    pthread_t udp_update_id;
+	pthread_t timer_update_id;
 
     //parse inputs
     if (argc != 5)
@@ -56,7 +93,7 @@ int main (int argc, char ** argv)
         return EXIT_FAILURE;
     }
 
-    int router_ID = atoi(argv[1]);
+    router_ID = atoi(argv[1]);
     char * host = argv[2];
     int ne_port = atoi(argv[3]);
     int router_port = atoi(argv[4]);
@@ -84,7 +121,7 @@ int main (int argc, char ** argv)
     sendto(ne_fd, &initRequest, sizeof(initRequest), 0, (struct sockaddr *) &ne_serveraddr, sizeof(ne_serveraddr));
     //rec response
     recvfrom(ne_fd, &initResponse, sizeof(initResponse), 0, NULL, NULL);
-
+    //init routing table
     ntoh_pkt_INIT_RESPONSE(&initResponse);
 	InitRoutingTbl(&initResponse, router_ID);
 
@@ -93,6 +130,28 @@ int main (int argc, char ** argv)
 
 	PrintRoutes(fptr, router_ID);
 
+    //threads stuff
+    //????????????????????????????????????????
+    int c;
+	for(c = 0; c < MAX_ROUTERS; c++){
+		realtime[c] = time(NULL);
+	}
+	convergence_time = time(NULL);
+	update_time = time(NULL);
+
+	if(pthread_create(&udp_update_id, NULL, udp_update, NULL)){
+		perror("Error creating thread for UDP update!");
+		return EXIT_FAILURE;
+	}
+	if(pthread_create(&timer_update_id, NULL,timer_update, NULL)){
+		perror("Error creating thread for timer update!");
+		return EXIT_FAILURE;
+	}
+
+	pthread_join(udp_update_id,NULL);
+	pthread_join(timer_update_id,NULL);
+
     fclose(fptr);
     return 0;
 }
+
