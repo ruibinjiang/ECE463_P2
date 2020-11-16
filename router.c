@@ -49,6 +49,9 @@ int open_udpfd(int port)
 void * udp_update(void * args){
     struct pkt_RT_UPDATE updateRequest;
     int isUpdated = 0;
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
     for (;;)
     {
         //rec response
@@ -67,13 +70,16 @@ void * udp_update(void * args){
 
         pthread_mutex_unlock(&lock);
     }
-    
+#pragma clang diagnostic pop
 }
 
 void * timer_update(void * args){
+    struct pkt_RT_UPDATE RoutingTablePacket_Outbound;
 
     t_checkUpdate = time(NULL);
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
     for (;;)
     {
         //first check the update interval
@@ -81,10 +87,13 @@ void * timer_update(void * args){
         if (time(NULL) - t_checkUpdate >= UPDATE_INTERVAL)
         {
             //convert routing table to a packet
+            memset(&RoutingTablePacket_Outbound, 0, sizeof(RoutingTablePacket_Outbound));
+            ConvertTabletoPkt(RoutingTablePacket_Outbound, router_ID);
             int i;
             for (i = 0; i < numNeighbors; i++)
             {
                 //now send that mf to all the nodes
+                RoutingTablePacket_Outbound.dest_id = ; //my brain hurts
             }
         }
         t_checkUpdate = time(NULL);
@@ -107,6 +116,7 @@ void * timer_update(void * args){
         //somehow...
         pthread_mutex_unlock(&lock);
     }
+#pragma clang diagnostic pop
 }
 
 int main (int argc, char ** argv)
