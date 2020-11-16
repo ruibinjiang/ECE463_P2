@@ -10,6 +10,7 @@
 /* GLOBAL VARIABLES */
 int ne_fd;
 int router_ID;
+int numNeighbors;
 pthread_mutex_t lock;
 
 struct pkt_RT_UPDATE RT_request;
@@ -45,10 +46,10 @@ int open_udpfd(int port)
     return listenfd;
 }
 
-void * udp_update(void){
+void * udp_update(void * args){
     struct pkt_RT_UPDATE updateRequest;
     int isUpdated = 0;
-    while (1)
+    for (;;)
     {
         //rec response
         recvfrom(ne_fd, &updateRequest, sizeof(updateRequest), 0, NULL, NULL);
@@ -69,8 +70,43 @@ void * udp_update(void){
     
 }
 
-void * timer_update(void){
+void * timer_update(void * args){
 
+    t_checkUpdate = time(NULL);
+
+    for (;;)
+    {
+        //first check the update interval
+        pthread_mutex_lock(&lock);
+        if (time(NULL) - t_checkUpdate >= UPDATE_INTERVAL)
+        {
+            //convert routing table to a packet
+            int i;
+            for (i = 0; i < numNeighbors; i++)
+            {
+                //now send that mf to all the nodes
+            }
+        }
+        t_checkUpdate = time(NULL);
+        pthread_mutex_unlock(&lock);
+
+        //then see if the neighbors are dead
+        pthread_mutex_lock(&lock);
+        int i;
+        for (i = 0; i < numNeighbors; i++)
+        {
+            //check if neighbors are dead
+            //if they are dead, table has not converged
+            //uninstall the dead router
+            //then print the routes
+        }
+        pthread_mutex_unlock(&lock);
+
+        //finally we check if the table has finally fucking converged
+        pthread_mutex_lock(&lock);
+        //somehow...
+        pthread_mutex_unlock(&lock);
+    }
 }
 
 int main (int argc, char ** argv)
@@ -124,6 +160,7 @@ int main (int argc, char ** argv)
     //init routing table
     ntoh_pkt_INIT_RESPONSE(&initResponse);
 	InitRoutingTbl(&initResponse, router_ID);
+	numNeighbors = initResponse.no_nbr;
 
 	sprintf(log_filename, "router%d.log", router_ID);
 	fptr = fopen(log_filename, "w");
