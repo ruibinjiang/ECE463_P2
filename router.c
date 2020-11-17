@@ -11,6 +11,9 @@
 int ne_fd;
 int router_ID;
 int numNeighbors;
+long long int t_convergence = 0;
+long long int t_update = 0;
+long long int t_init = 0;
 pthread_mutex_t lock;
 struct pkt_INIT_RESPONSE initResponse;
 struct sockaddr_in ne_serveraddr;
@@ -18,6 +21,7 @@ struct pkt_RT_UPDATE RT_request;
 FILE* fptr;
 long long int timeLastChecked[MAX_ROUTERS] = {0};
 int isNeighborDead[MAX_ROUTERS] = {0};
+int isConverged = 0;
 
 void * udp_update(void);
 void * timer_update(void);
@@ -51,7 +55,7 @@ int open_udpfd(int port)
 
 void * udp_update(void * args){
     struct pkt_RT_UPDATE updateRequest;
-    int isUpdated = 0;
+    //int isUpdated = 0;
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
@@ -67,7 +71,7 @@ void * udp_update(void * args){
         isUpdated = UpdateRoutes(&updateRequest,?????cost,router_ID);
         if(isUpdated){
             PrintRoutes(fptr,router_ID);
-            convergence_time = time(NULL);
+            t_convergence = time(NULL);
             isConverged = ;//??????????????
         }
 
@@ -78,9 +82,6 @@ void * udp_update(void * args){
 
 void * timer_update(void * args){
     struct pkt_RT_UPDATE RoutingTablePacket_Outbound;
-
-    long long int t_checkUpdate = time(NULL);
-
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
     for (;;)
@@ -101,8 +102,8 @@ void * timer_update(void * args){
                 sendto(ne_fd, &RoutingTablePacket_Outbound, sizeof(RoutingTablePacket_Outbound), 0, &ne_serveraddr, sizeof(ne_serveraddr));
                 ntoh_pkt_RT_UPDATE(&RoutingTablePacket_Outbound);
             }
+            t_update = time(NULL);
         }
-        t_checkUpdate = time(NULL);
         //pthread_mutex_unlock(&lock);
 
         //then see if the neighbors are dead
@@ -115,11 +116,12 @@ void * timer_update(void * args){
             //if they are dead, table has not converged
             //uninstall the dead router
             //then print the routes
-            if (((time(NULL) - timeLastChecked[i]) > FAILURE_DETECTION) && !isNeighborDead[i])
+            if (((time(NULL) - timeLastChecked[i]) > FAILURE_DETECTION) && !(isNeighborDead[i]))
             {
                 isNeighborDead[i] = 1;
                 UninstallRoutesOnNbrDeath(initResponse.nbrcost[i].nbr);
                 PrintRoutes(fptr, router_ID);
+                isConverged = 0;
             }
         }
         //pthread_mutex_unlock(&lock);
@@ -127,6 +129,12 @@ void * timer_update(void * args){
         //finally we check if the table has finally fucking converged
         //pthread_mutex_lock(&lock);
         //somehow...
+        if (time(NULL) - t_update > CONVERGE_TIMEOUT)
+        {
+            fprintf(fptr, "%d: Converged\n", (int)(t_update - t_init));
+            fflush(fptr);
+            isConverged = 1;
+        }
         pthread_mutex_unlock(&lock);
     }
 #pragma clang diagnostic pop
@@ -182,6 +190,7 @@ int main (int argc, char ** argv)
 	InitRoutingTbl(&initResponse, router_ID);
 	numNeighbors = initResponse.no_nbr;
 
+
 	sprintf(log_filename, "router%d.log", router_ID);
 	fptr = fopen(log_filename, "w");
 
@@ -193,8 +202,8 @@ int main (int argc, char ** argv)
 	for(c = 0; c < MAX_ROUTERS; c++){
 		realtime[c] = time(NULL);
 	}
-	convergence_time = time(NULL);
-	update_time = time(NULL);
+
+	t_update = t_convergence = t_init = time(NULL);
 
 	if(pthread_create(&udp_update_id, NULL, udp_update, NULL)){
 		perror("Error creating thread for UDP update!");
