@@ -16,7 +16,7 @@ struct pkt_INIT_RESPONSE initResponse;
 struct sockaddr_in ne_serveraddr;
 struct pkt_RT_UPDATE RT_request;
 FILE* fptr;
-time_t timeLastChecked[MAX_ROUTERS] = {0};
+long long int timeLastChecked[MAX_ROUTERS] = {0};
 int isNeighborDead[MAX_ROUTERS] = {0};
 
 void * udp_update(void);
@@ -79,7 +79,7 @@ void * udp_update(void * args){
 void * timer_update(void * args){
     struct pkt_RT_UPDATE RoutingTablePacket_Outbound;
 
-    t_checkUpdate = time(NULL);
+    long long int t_checkUpdate = time(NULL);
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
@@ -117,7 +117,9 @@ void * timer_update(void * args){
             //then print the routes
             if (((time(NULL) - timeLastChecked[i]) > FAILURE_DETECTION) && !isNeighborDead[i])
             {
-
+                isNeighborDead[i] = 1;
+                UninstallRoutesOnNbrDeath(initResponse.nbrcost[i].nbr);
+                PrintRoutes(fptr, router_ID);
             }
         }
         //pthread_mutex_unlock(&lock);
