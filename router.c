@@ -16,6 +16,8 @@ struct pkt_INIT_RESPONSE initResponse;
 struct sockaddr_in ne_serveraddr;
 struct pkt_RT_UPDATE RT_request;
 FILE* fptr;
+time_t timeLastChecked[MAX_ROUTERS] = {0};
+int isNeighborDead[MAX_ROUTERS] = {0};
 
 void * udp_update(void);
 void * timer_update(void);
@@ -101,10 +103,11 @@ void * timer_update(void * args){
             }
         }
         t_checkUpdate = time(NULL);
-        pthread_mutex_unlock(&lock);
+        //pthread_mutex_unlock(&lock);
 
         //then see if the neighbors are dead
-        pthread_mutex_lock(&lock);
+
+        //pthread_mutex_lock(&lock);
         int i;
         for (i = 0; i < numNeighbors; i++)
         {
@@ -112,11 +115,15 @@ void * timer_update(void * args){
             //if they are dead, table has not converged
             //uninstall the dead router
             //then print the routes
+            if (((time(NULL) - timeLastChecked[i]) > FAILURE_DETECTION) && !isNeighborDead[i])
+            {
+
+            }
         }
-        pthread_mutex_unlock(&lock);
+        //pthread_mutex_unlock(&lock);
 
         //finally we check if the table has finally fucking converged
-        pthread_mutex_lock(&lock);
+        //pthread_mutex_lock(&lock);
         //somehow...
         pthread_mutex_unlock(&lock);
     }
