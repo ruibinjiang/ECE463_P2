@@ -12,9 +12,10 @@ int ne_fd;
 int router_ID;
 int numNeighbors;
 pthread_mutex_t lock;
-
+struct pkt_INIT_RESPONSE initResponse;
+struct sockaddr_in ne_serveraddr;
 struct pkt_RT_UPDATE RT_request;
-
+FILE* fptr;
 
 void * udp_update(void);
 void * timer_update(void);
@@ -88,12 +89,15 @@ void * timer_update(void * args){
         {
             //convert routing table to a packet
             memset(&RoutingTablePacket_Outbound, 0, sizeof(RoutingTablePacket_Outbound));
-            ConvertTabletoPkt(RoutingTablePacket_Outbound, router_ID);
+            ConvertTabletoPkt(&RoutingTablePacket_Outbound, router_ID);
             int i;
             for (i = 0; i < numNeighbors; i++)
             {
                 //now send that mf to all the nodes
-                RoutingTablePacket_Outbound.dest_id = ; //my brain hurts
+                RoutingTablePacket_Outbound.dest_id = initResponse.nbrcost[i]; //my brain hurts
+                hton_pkt_RT_UPDATE(&RoutingTablePacket_Outbound);
+                sendto(ne_fd, &RoutingTablePacket_Outbound, sizeof(RoutingTablePacket_Outbound), 0, &ne_serveraddr, sizeof(ne_serveraddr));
+                ntoh_pkt_RT_UPDATE(&RoutingTablePacket_Outbound);
             }
         }
         t_checkUpdate = time(NULL);
@@ -122,11 +126,8 @@ void * timer_update(void * args){
 int main (int argc, char ** argv)
 {
     /* MAIN VARIABLES */
-    struct sockaddr_in ne_serveraddr;
-    FILE* fptr;
     struct hostent * hp;
     struct pkt_INIT_REQUEST initRequest;
-    struct pkt_INIT_RESPONSE initResponse;
     char log_filename[20];
     pthread_t udp_update_id;
 	pthread_t timer_update_id;
