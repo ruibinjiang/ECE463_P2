@@ -60,9 +60,7 @@ void * udp_update(void * args){
     int isUpdated = 0;
     int recIndex = 0;
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "EndlessLoop"
-    for (;;)
+    while(1)
     {
         //rec response
         recvfrom(ne_fd, &updateRequest, sizeof(updateRequest), 0, NULL, NULL);
@@ -82,7 +80,6 @@ void * udp_update(void * args){
 
         pthread_mutex_unlock(&lock);
     }
-#pragma clang diagnostic pop
 }
 
 void * timer_update(void * args){
@@ -90,9 +87,8 @@ void * timer_update(void * args){
     int i = 0;
     int nbrID = 0;
     int total_time = 0;
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "EndlessLoop"
-    for (;;)
+
+    while(1)
     {
         //first check the update interval
         pthread_mutex_lock(&lock);
@@ -146,7 +142,6 @@ void * timer_update(void * args){
         }
         pthread_mutex_unlock(&lock);
     }
-#pragma clang diagnostic pop
 }
 
 int main (int argc, char ** argv)
