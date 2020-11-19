@@ -64,7 +64,7 @@ void * udp_update(void * args){
     {
         //rec response
         recvfrom(ne_fd, &updateRequest, sizeof(updateRequest), 0, NULL, NULL);
-        
+        printf("AAAAAA");
         pthread_mutex_lock(&lock);
         ntoh_pkt_RT_UPDATE(&updateRequest);
         //for loop to check for update time
