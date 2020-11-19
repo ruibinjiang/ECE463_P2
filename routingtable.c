@@ -72,10 +72,16 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 			//????if not changing anything
 			
 			if((currRoute->cost + costToNbr) >= INFINITY){
-				routingTable[destID].cost = INFINITY;
+				if(routingTable[destID].cost != INFINITY){
+					routingTable[destID].cost = INFINITY;
+					isUpdated=1;
+				}
 			}
 			else{
-				routingTable[destID].cost = currRoute->cost + costToNbr;
+				if(routingTable[destID].cost != currRoute->cost + costToNbr){
+					isUpdated=1;
+					routingTable[destID].cost = currRoute->cost + costToNbr;
+				}
 			}
 			//check path_len change
 			if(routingTable[destID].path_len != currRoute->path_len + 1){
