@@ -1,4 +1,4 @@
-CFLAGS = -g -Wall -lpthread
+CFLAGS = -g -Wall -pthread
 CC = gcc
 
 # change based on type of router to be built

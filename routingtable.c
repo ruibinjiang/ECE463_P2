@@ -5,39 +5,57 @@
 /* ----- GLOBAL VARIABLES ----- */
 struct route_entry routingTable[MAX_ROUTERS];
 int NumRoutes;
-
+int id2Index[MAX_ROUTERS] = {0};
 
 void InitRoutingTbl (struct pkt_INIT_RESPONSE *InitResponse, int myID){
 	//init other paths
 
 	int i;
+	for(i=0;i<MAX_ROUTERS;i++){
+		id2Index[i] = -1;
+	}
+	
 	for (i = 0; i < InitResponse->no_nbr; i++)
     {
-	    struct route_entry * cur = &(routingTable[(InitResponse->nbrcost[i].nbr)]);
-
+	    struct route_entry * cur = &(routingTable[i+1]);
 	    cur->cost = InitResponse->nbrcost[i].cost;
 	    cur->dest_id = InitResponse->nbrcost[i].nbr;
 	    cur->next_hop = InitResponse->nbrcost[i].nbr;
 	    cur->path[0] = myID;
-	    cur->path[1] = InitResponse->nbrcost->nbr;
+	    cur->path[1] = InitResponse->nbrcost[i].nbr;
 	    cur->path_len = 2;
+		id2Index[InitResponse->nbrcost[i].nbr] = i+1;
     }
 
 	//init path to self
-	routingTable[myID].path_len = 1;
-	routingTable[myID].path[0] = myID;
-	routingTable[myID].next_hop = myID;
-    routingTable[myID].dest_id = myID;
-    routingTable[myID].cost = 0;
+	routingTable[0].path_len = 1;
+	routingTable[0].path[0] = myID;
+	routingTable[0].next_hop = myID;
+    routingTable[0].dest_id = myID;
+    routingTable[0].cost = 0;
+	id2Index[myID] = 0;
+
+
 
     NumRoutes = (int) InitResponse->no_nbr + 1;
+	//test print
+	/*int j;
+	for(i = 0; i < NumRoutes; i++){
+		printf("<R%d -> R%d> Path: R%d", myID, routingTable[i].dest_id, myID);
+
+		for(j = 1; j < routingTable[i].path_len; j++){
+			printf(" -> R%d", routingTable[i].path[j]);	
+		}
+		printf( ", Cost: %d\n", routingTable[i].cost);
+	}
+	*/
 }
 
 
 int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myID){
 	int isUpdated = 0;  //update flag
 	struct route_entry * currRoute;
-	int destID, j;
+	int destID, j,destID_Index;
 	int splitHorizon = 0;
 
 	//d = c(x,z)+d(z,y) cost of path
@@ -48,59 +66,62 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 	{	
 		currRoute = &(RecvdUpdatePacket->route[i]);
 		destID = (int) currRoute->dest_id;
+		destID_Index = id2Index[destID];
 
         //check for existence
-        if (routingTable[destID].dest_id != destID){
+        if (destID_Index==-1){
 			isUpdated=1;
 			NumRoutes++;
+			id2Index[destID] = NumRoutes-1;
+			destID_Index = id2Index[destID];
 			//add route to dest
-			routingTable[destID].dest_id = currRoute->dest_id;
-			routingTable[destID].next_hop = RecvdUpdatePacket->sender_id;
+			routingTable[destID_Index].dest_id = currRoute->dest_id;
+			routingTable[destID_Index].next_hop = RecvdUpdatePacket->sender_id;
 			if((currRoute->cost + costToNbr) >= INFINITY){
-				routingTable[destID].cost = INFINITY;
+				routingTable[destID_Index].cost = INFINITY;
 			}
 			else{
-				routingTable[destID].cost = currRoute->cost + costToNbr;
+				routingTable[destID_Index].cost = currRoute->cost + costToNbr;
 			}
-			routingTable[destID].path_len = currRoute->path_len + 1;
-			routingTable[destID].path[0]=myID;
-			memcpy(&(routingTable[destID].path[1]),currRoute->path,(currRoute->path_len)*sizeof(int));
+			routingTable[destID_Index].path_len = currRoute->path_len + 1;
+			routingTable[destID_Index].path[0]=myID;
+			memcpy(&(routingTable[destID_Index].path[1]),currRoute->path,(currRoute->path_len)*sizeof(int));
 		}
 		//forced update
-		else if (routingTable[destID].next_hop == RecvdUpdatePacket->sender_id){
+		else if (routingTable[destID_Index].next_hop == RecvdUpdatePacket->sender_id){
 			//change route, cost
 			//????if not changing anything
 			
 			if((currRoute->cost + costToNbr) >= INFINITY){
-				if(routingTable[destID].cost != INFINITY){
-					routingTable[destID].cost = INFINITY;
+				if(routingTable[destID_Index].cost != INFINITY){
+					routingTable[destID_Index].cost = INFINITY;
 					isUpdated=1;
 				}
 			}
 			else{
-				if(routingTable[destID].cost != currRoute->cost + costToNbr){
+				if(routingTable[destID_Index].cost != currRoute->cost + costToNbr){
 					isUpdated=1;
-					routingTable[destID].cost = currRoute->cost + costToNbr;
+					routingTable[destID_Index].cost = currRoute->cost + costToNbr;
 				}
 			}
 			//check path_len change
-			if(routingTable[destID].path_len != currRoute->path_len + 1){
+			if(routingTable[destID_Index].path_len != currRoute->path_len + 1){
 				isUpdated=1;
-				routingTable[destID].path_len = currRoute->path_len + 1;
+				routingTable[destID_Index].path_len = currRoute->path_len + 1;
 			}
 			
 			if(isUpdated){
-				routingTable[destID].path[0]=myID;
-				memcpy(&(routingTable[destID].path[1]),currRoute->path,(currRoute->path_len)*sizeof(int));
+				routingTable[destID_Index].path[0]=myID;
+				memcpy(&(routingTable[destID_Index].path[1]),currRoute->path,(currRoute->path_len)*sizeof(int));
 			}
-			else if(memcmp(&(routingTable[destID].path[1]),&(currRoute->path),(currRoute->path_len)*sizeof(int))){
-				routingTable[destID].path[0]=myID;
-				memcpy(&(routingTable[destID].path[1]),currRoute->path,(currRoute->path_len)*sizeof(int));
+			else if(memcmp(&(routingTable[destID_Index].path[1]),&(currRoute->path),(currRoute->path_len)*sizeof(int))){
+				routingTable[destID_Index].path[0]=myID;
+				memcpy(&(routingTable[destID_Index].path[1]),currRoute->path,(currRoute->path_len)*sizeof(int));
 			}
 			
 		}
 		else{//split horizon
-			if((currRoute->cost + costToNbr) < routingTable[destID].cost){
+			if((currRoute->cost + costToNbr) < routingTable[destID_Index].cost){
 				for (j = 0; j < currRoute->path_len; j++){
 					if (currRoute->path[j] == myID){
 						splitHorizon = 1;
@@ -110,17 +131,17 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 				if(!splitHorizon){
 					isUpdated=1;
 					//update everything
-					routingTable[destID].dest_id = currRoute->dest_id;
-					routingTable[destID].next_hop = RecvdUpdatePacket->sender_id;
+					routingTable[destID_Index].dest_id = currRoute->dest_id;
+					routingTable[destID_Index].next_hop = RecvdUpdatePacket->sender_id;
 					if((currRoute->cost + costToNbr) >= INFINITY){
-						routingTable[destID].cost = INFINITY;
+						routingTable[destID_Index].cost = INFINITY;
 					}
 					else{
-						routingTable[destID].cost = currRoute->cost + costToNbr;
+						routingTable[destID_Index].cost = currRoute->cost + costToNbr;
 					}
-					routingTable[destID].path_len = currRoute->path_len + 1;
-					routingTable[destID].path[0]=myID;
-					memcpy(&(routingTable[destID].path[1]),currRoute->path,(currRoute->path_len)*sizeof(int));
+					routingTable[destID_Index].path_len = currRoute->path_len + 1;
+					routingTable[destID_Index].path[0]=myID;
+					memcpy(&(routingTable[destID_Index].path[1]),currRoute->path,(currRoute->path_len)*sizeof(int));
 				}
 			}
 		}
