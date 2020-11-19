@@ -64,7 +64,7 @@ void * udp_update(void * args){
     {
         //rec response
         recvfrom(ne_fd, &updateRequest, sizeof(updateRequest), 0, NULL, NULL);
-        printf("AAAAAA");
+        //printf("AAAAAA");
         pthread_mutex_lock(&lock);
         ntoh_pkt_RT_UPDATE(&updateRequest);
         //for loop to check for update time
@@ -137,7 +137,7 @@ void * timer_update(void * args){
         if ((time(NULL) - t_convergence > CONVERGE_TIMEOUT) && !isConverged)
         {   
             total_time = (int)(time(NULL) - t_init);
-            fprintf(fptr, "%d:Converged\n", total_time);
+            fprintf(fptr, "%d: Converged\n", total_time);
             fflush(fptr);
             isConverged = 1;
         }
@@ -203,7 +203,7 @@ int main (int argc, char ** argv)
 	PrintRoutes(fptr, router_ID);
 
     //threads stuff
-    //int i, temp;
+    int i, temp;
 	for(i = 0; i < numNeighbors; i++){
         temp = nbrcost[i].nbr;
 		timeLastHeard[temp] = time(NULL);
@@ -213,11 +213,11 @@ int main (int argc, char ** argv)
 	t_update = t_convergence = t_init = time(NULL);
 
 	if(pthread_create(&udp_update_id, NULL, udp_update, NULL)){
-		perror("Error creating thread for UDP update thread!");
+		perror("Error creating thread for UDP update thread!\n");
 		return EXIT_FAILURE;
 	}
 	if(pthread_create(&timer_update_id, NULL,timer_update, NULL)){
-		perror("Error creating thread for timer update thread!");
+		perror("Error creating thread for timer update thread!\n");
 		return EXIT_FAILURE;
 	}
 
