@@ -70,16 +70,28 @@ int UpdateRoutes(struct pkt_RT_UPDATE *RecvdUpdatePacket, int costToNbr, int myI
 		else if (routingTable[destID].next_hop == RecvdUpdatePacket->sender_id){
 			//change route, cost
 			//????if not changing anything
-			isUpdated=1;
+			
 			if((currRoute->cost + costToNbr) >= INFINITY){
 				routingTable[destID].cost = INFINITY;
 			}
 			else{
 				routingTable[destID].cost = currRoute->cost + costToNbr;
 			}
-			routingTable[destID].path_len = currRoute->path_len + 1;
-			routingTable[destID].path[0]=myID;
-			memcpy(&(routingTable[destID].path[1]),currRoute->path,(currRoute->path_len)*sizeof(int));
+			//check path_len change
+			if(routingTable[destID].path_len != currRoute->path_len + 1){
+				isUpdated=1;
+				routingTable[destID].path_len = currRoute->path_len + 1;
+			}
+			
+			if(isUpdated){
+				routingTable[destID].path[0]=myID;
+				memcpy(&(routingTable[destID].path[1]),currRoute->path,(currRoute->path_len)*sizeof(int));
+			}
+			else if(memcmp(&(routingTable[destID].path[1]),&(currRoute->path),(currRoute->path_len)*sizeof(int))){
+				routingTable[destID].path[0]=myID;
+				memcpy(&(routingTable[destID].path[1]),currRoute->path,(currRoute->path_len)*sizeof(int));
+			}
+			
 		}
 		else{//split horizon
 			if((currRoute->cost + costToNbr) < routingTable[destID].cost){
