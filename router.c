@@ -68,10 +68,10 @@ void * udp_update(void * args){
         pthread_mutex_lock(&lock);
         ntoh_pkt_RT_UPDATE(&updateRequest);
         //for loop to check for update time
-        recIndex = nbrIndex[updateRequest.sender_id];
+        recIndex = updateRequest.sender_id;
         timeLastHeard[recIndex] = time(NULL);
         isNbrDead[recIndex] = 0;
-        isUpdated = UpdateRoutes(&updateRequest,nbrcost[recIndex].cost,router_ID);
+        isUpdated = UpdateRoutes(&updateRequest,nbrcost[nbrIndex[recIndex]].cost,router_ID);
         if(isUpdated){
             PrintRoutes(fptr,router_ID);
             t_convergence = time(NULL);
@@ -203,7 +203,7 @@ int main (int argc, char ** argv)
 	PrintRoutes(fptr, router_ID);
 
     //threads stuff
-    int i, temp;
+    //int i, temp;
 	for(i = 0; i < numNeighbors; i++){
         temp = nbrcost[i].nbr;
 		timeLastHeard[temp] = time(NULL);
