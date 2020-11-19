@@ -104,6 +104,7 @@ void * timer_update(void * args){
                 RoutingTablePacket_Outbound.dest_id = nbrcost[i].nbr; //my brain hurts
                 hton_pkt_RT_UPDATE(&RoutingTablePacket_Outbound);
                 sendto(ne_fd, &RoutingTablePacket_Outbound, sizeof(RoutingTablePacket_Outbound), 0, (struct sockaddr *) &ne_serveraddr, sizeof(ne_serveraddr));
+                ntoh_pkt_RT_UPDATE(&RoutingTablePacket_Outbound);
             }
             t_update = time(NULL);
         }
