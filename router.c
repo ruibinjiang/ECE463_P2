@@ -15,6 +15,7 @@ long long int t_convergence = 0;
 long long int t_update = 0;
 long long int t_init = 0;
 pthread_mutex_t lock;
+char log_filename[20];
 struct pkt_INIT_RESPONSE initResponse;
 struct sockaddr_in ne_serveraddr;
 struct pkt_RT_UPDATE RT_request;
@@ -73,7 +74,9 @@ void * udp_update(void * args){
         isNbrDead[recIndex] = 0;
         isUpdated = UpdateRoutes(&updateRequest,nbrcost[nbrIndex[recIndex]].cost,router_ID);
         if(isUpdated){
+            fptr = fopen(log_filename, "a");
             PrintRoutes(fptr,router_ID);
+            fclose(fptr);
             t_convergence = time(NULL);
             isConverged = 0;//??????????????
         }
@@ -124,7 +127,9 @@ void * timer_update(void * args){
             {
                 isNbrDead[nbrID] = 1;
                 UninstallRoutesOnNbrDeath(nbrID);
+                fptr = fopen(log_filename, "a");
                 PrintRoutes(fptr, router_ID);
+                fclose(fptr);
                 isConverged = 0;
                 t_convergence = time(NULL);
             }
@@ -137,8 +142,10 @@ void * timer_update(void * args){
         if ((time(NULL) - t_convergence > CONVERGE_TIMEOUT) && !isConverged)
         {   
             total_time = (int)(time(NULL) - t_init);
+            fptr = fopen(log_filename, "a");
             fprintf(fptr, "%d: Converged\n", total_time);
             fflush(fptr);
+            fclose(fptr);
             isConverged = 1;
         }
         pthread_mutex_unlock(&lock);
@@ -150,7 +157,6 @@ int main (int argc, char ** argv)
     /* MAIN VARIABLES */
     struct hostent * hp;
     struct pkt_INIT_REQUEST initRequest;
-    char log_filename[20];
     pthread_t udp_update_id;
 	pthread_t timer_update_id;
 
@@ -199,9 +205,8 @@ int main (int argc, char ** argv)
     
     sprintf(log_filename, "router%d.log", router_ID);
 	fptr = fopen(log_filename, "w");
-
 	PrintRoutes(fptr, router_ID);
-
+    fclose(fptr);
     //threads stuff
     int i, temp;
 	for(i = 0; i < numNeighbors; i++){
@@ -224,7 +229,7 @@ int main (int argc, char ** argv)
 	pthread_join(udp_update_id,NULL);
 	pthread_join(timer_update_id,NULL);
 
-    fclose(fptr);
+    
     return 0;
 }
 
