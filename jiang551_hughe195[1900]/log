@@ -1,0 +1,167 @@
+Compiling files... SUCCEEDED
+Running test: grading_scheme.test
+
+===================================================
+
+Starting network: 2_routers.conf...
+checking router 0
+checking router 0
+checking router 1
+checking router 1
+SUCCEEDED
+10
+Your grade for this part is 10 out of 10
+
+
+End Test
+
+===================================================
+
+Starting network: 4_routers.conf...
+checking router 0
+checking router 0
+checking router 1
+checking router 1
+checking router 2
+checking router 2
+checking router 3
+checking router 3
+SUCCEEDED
+10
+Your grade for this part is 10 out of 10
+
+
+End Test
+
+===================================================
+
+Starting network: 5_routers.conf...
+checking router 0
+checking router 0
+checking router 1
+checking router 1
+checking router 2
+checking router 2
+checking router 3
+checking router 3
+checking router 4
+checking router 4
+SUCCEEDED
+10
+Your grade for this part is 10 out of 10
+
+
+Killing router: 1...
+
+WAITING FOR CONVERGENCE OF ROUTER 0 IN TEST TABLE
+checking router 0
+checking router 2
+checking router 2
+checking router 3
+checking router 3
+checking router 4
+checking router 4
+FAILED
+Your grade for this part is 0 out of 10
+
+
+Router0
+-----------------------------------------------------------------
+
+Expected:
+R0 -> R1: path: R0 -> R1, cost: 999
+R0 -> R0: path: R0, cost: 0
+R0 -> R3: path: R0 -> R4 -> R2 -> R3, cost: 58
+R0 -> R2: path: R0 -> R4 -> R2, cost: 56
+R0 -> R4: path: R0 -> R4, cost: 50
+Actual Result:
+R0 -> R1: path: R0 -> R4 -> R1, cost: 999
+R0 -> R0: path: R0, cost: 0
+R0 -> R3: path: R0 -> R4 -> R2 -> R3, cost: 999
+R0 -> R2: path: R0 -> R4 -> R2, cost: 999
+R0 -> R4: path: R0 -> R4, cost: 50
+
+-----------------------------------------------------------------
+
+
+Starting router: 1...
+checking router 0
+checking router 0
+checking router 1
+checking router 1
+checking router 2
+checking router 2
+checking router 3
+checking router 3
+checking router 4
+checking router 4
+SUCCEEDED
+10
+Your grade for this part is 10 out of 10
+
+
+Killing router: 3...
+
+WAITING FOR CONVERGENCE OF ROUTER 0 IN TEST TABLE
+checking router 0
+checking router 0
+checking router 1
+checking router 1
+checking router 2
+checking router 2
+checking router 4
+checking router 4
+SUCCEEDED
+7
+Your grade for this part is 7 out of 7
+
+
+Starting router: 3...
+checking router 0
+checking router 0
+checking router 1
+checking router 1
+checking router 2
+checking router 2
+checking router 3
+checking router 3
+checking router 4
+checking router 4
+SUCCEEDED
+8
+Your grade for this part is 8 out of 8
+
+
+End Test
+
+===================================================
+
+Starting network: 10_routers.conf...
+checking router 0
+checking router 0
+checking router 1
+checking router 1
+checking router 2
+checking router 2
+checking router 3
+checking router 3
+checking router 4
+checking router 4
+checking router 5
+checking router 5
+checking router 6
+checking router 6
+checking router 7
+checking router 7
+checking router 8
+checking router 8
+checking router 9
+checking router 9
+SUCCEEDED
+10
+Your grade for this part is 10 out of 10
+
+
+End Test
+Total grade is 70 out of 80
+Done
